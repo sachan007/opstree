@@ -1,0 +1,53 @@
+Create a view “Build”
+Create a user with role based strategy (can only build and cancel jobs)
+Create a maven based project in “build” view
+Configuration above job with following parameters
+-git URL (spring3hibernate)
+-invoke your maven script
+-POM.xml location
+-Maven version
+Switch to the user you have created above
+Run above job
+
+Install plugin role based authorization
+https://wiki.jenkins.io/display/JENKINS/Role+Strategy+Plugin
+Manage jenkins- manage and assign role
+Along with build and cancel we need to give some more permissions as mandatory. (job-discover,read, view-read)
+Add this role to your user
+-generate key for jenkins access in jenkins root directory as jenkins user (/var/lib/jenkins)
+Go to  /var/lib/jenkins
+Switch to jenkins user: 
+# su jenkins
+# ssh-keygen
+#cd .ssh
+#Find file …..pub
+#Cat id_rsa.pub
+Copy public key and add this in settings in Github (ssh and gcc key)
+Now go to jenkins and create credentials to be used for git in jenkins
+Credentials- system- global credentials unrestricted- Add credentials- 
+Kind- username and password
+Give Github username and password.
+Install and configure git in system
+Install maven in system
+Go jo jenkins Job - create new job
+Under source code management select git
+URL- git@github.com:opstree/spring3hibernate.git
+Credentials- select credential created
+Unde Build give commands to be executed, you can directly write bash script here or can give command to execute script you created after putting your script at /var/lib/jenkins. 
+
+
+#! /bin/bash
+cd /var/lib/jenkins/workspace/first
+mvn install
+cp -rf /var/lib/jenkins/workspace/first/target/Spring3HibernateApp-1.8-SNAPSHOT  /opt/tomcat/apache-tomcat-8.5.42/webapps/
+
+
+Do not forget to give ownership and execute permissions to script: 
+#chmod +x training.sh
+#chown -R jenkins. training.sh
+Also we used script to copy war file to tomcat so it need permissions to copy there.
+#chown -R jenkins /opt/tomcat
+
+Login as new user and - Build Now
+
+BANG!!!!!
